@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const styles = `
@@ -72,13 +72,6 @@ const styles = `
   }
 `;
 
-const DEMO = [
-  { id: 1, name: 'Jordan 1 Retro High OG', cost: 180, soldPrice: 340, isSold: true, dateAdded: '6/1/2026', dateSold: '6/8/2026' },
-  { id: 2, name: 'New Balance 550 White Grey', cost: 110, soldPrice: 195, isSold: true, dateAdded: '6/3/2026', dateSold: '6/12/2026' },
-  { id: 3, name: 'Yeezy Slide Pure', cost: 60, soldPrice: null, isSold: false, dateAdded: '6/15/2026', dateSold: null },
-  { id: 4, name: 'Nike Dunk Low Panda', cost: 110, soldPrice: null, isSold: false, dateAdded: '6/17/2026', dateSold: null },
-];
-
 // Parse "M/D/YYYY" → Date
 function parseDate(str) {
   if (!str) return null;
@@ -91,14 +84,6 @@ function startOfWeek(d) {
   r.setDate(r.getDate() - r.getDay());
   r.setHours(0, 0, 0, 0);
   return r;
-}
-
-function startOfMonth(d) {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-
-function startOfYear(d) {
-  return new Date(d.getFullYear(), 0, 1);
 }
 
 function bucketKey(date, horizon) {
@@ -125,13 +110,26 @@ function bucketLabel(key, horizon) {
 }
 
 export default function App() {
-  const [inventory, setInventory] = useState(DEMO);
+  // Load data from LocalStorage on initial render
+  const [inventory, setInventory] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('resell_tracker_data');
+      if (saved) return JSON.parse(saved);
+    }
+    return []; // Start empty if no saved data
+  });
+
   const [tab, setTab] = useState('active');
   const [horizon, setHorizon] = useState('W');
   const [name, setName] = useState('');
   const [cost, setCost] = useState('');
   const [sellingId, setSellingId] = useState(null);
   const [sellPrice, setSellPrice] = useState('');
+
+  // Save data to LocalStorage whenever inventory changes
+  useEffect(() => {
+    localStorage.setItem('resell_tracker_data', JSON.stringify(inventory));
+  }, [inventory]);
 
   const sold = inventory.filter(i => i.isSold);
   const active = inventory.filter(i => !i.isSold);
