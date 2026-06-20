@@ -3,76 +3,107 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 
 const styles = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #09090B; color: #FAFAFA; font-size: 14px; }
-  .app { max-width: 860px; margin: 0 auto; padding: 32px 20px 72px; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+    background: #09090B; 
+    color: #FAFAFA; 
+    font-size: 15px; 
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Mobile-first padding with iPhone notch support */
+  .app { 
+    max-width: 860px; 
+    margin: 0 auto; 
+    padding: calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 80px); 
+  }
+  
   .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
   .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #FAFAFA; }
-  h1 { font-size: 22px; font-weight: 500; color: #FAFAFA; letter-spacing: -.02em; margin-bottom: 3px; }
-  .sub { font-size: 13px; color: #A1A1AA; margin-bottom: 28px; }
-  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-  .metric { background: #18181B; border: 1px solid #27272A; border-radius: 12px; padding: 16px 18px; }
-  .mlabel { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: #A1A1AA; margin-bottom: 8px; }
-  .mval { font-size: 22px; font-weight: 500; letter-spacing: -.02em; color: #FAFAFA; }
+  h1 { font-size: 24px; font-weight: 600; color: #FAFAFA; letter-spacing: -.02em; margin-bottom: 4px; }
+  .sub { font-size: 14px; color: #A1A1AA; margin-bottom: 24px; }
+  
+  .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+  .metric { background: #18181B; border: 1px solid #27272A; border-radius: 14px; padding: 16px; }
+  .mlabel { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #A1A1AA; margin-bottom: 8px; }
+  .mval { font-size: 22px; font-weight: 600; letter-spacing: -.02em; color: #FAFAFA; }
   .mval.pos { color: #34D399; }
   .mval.neg { color: #F87171; }
-  .card { background: #09090B; border: 1px solid #27272A; border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
-  .card-pad { padding: 20px 22px; }
+  
+  .card { background: #09090B; border: 1px solid #27272A; border-radius: 16px; margin-bottom: 24px; overflow: hidden; }
+  .card-pad { padding: 20px 16px; }
+  
   .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .slabel { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: #A1A1AA; }
-  .time-tabs { display: flex; gap: 4px; }
-  .time-tab { padding: 5px 12px; font-size: 12px; font-weight: 500; color: #A1A1AA; background: transparent; border: 1px solid transparent; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-  .time-tab:hover { color: #FAFAFA; }
-  .time-tab.on { background: #27272A; color: #FAFAFA; border-color: #27272A; }
-  .form-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-  .ff { flex: 1; min-width: 110px; }
-  .ff label { display: block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: #A1A1AA; margin-bottom: 6px; }
-  .ff input { width: 100%; padding: 10px 12px; border: 1px solid #27272A; border-radius: 8px; font-size: 14px; background: #09090B; color: #FAFAFA; transition: border-color 0.2s; }
+  .slabel { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #A1A1AA; }
+  
+  .time-tabs { display: flex; gap: 4px; background: #18181B; padding: 4px; border-radius: 8px; border: 1px solid #27272A; }
+  .time-tab { padding: 6px 12px; font-size: 13px; font-weight: 500; color: #A1A1AA; background: transparent; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+  .time-tab.on { background: #27272A; color: #FAFAFA; }
+  
+  .form-row { display: flex; flex-direction: column; gap: 16px; }
+  .ff label { display: block; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: #A1A1AA; margin-bottom: 8px; }
+  
+  /* CRITICAL: font-size 16px stops iOS Safari from auto-zooming */
+  .ff input { width: 100%; padding: 14px 16px; border: 1px solid #27272A; border-radius: 10px; font-size: 16px; background: #18181B; color: #FAFAFA; -webkit-appearance: none; }
   .ff input:focus { outline: none; border-color: #FAFAFA; }
   .ff input::placeholder { color: #52525B; }
-  .btn-primary { padding: 10px 20px; background: #FAFAFA; color: #09090B; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
-  .btn-primary:hover { background: #E4E4E7; }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .tab { padding: 8px 20px; font-size: 13px; font-weight: 500; color: #A1A1AA; background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-  .tab:hover { color: #FAFAFA; }
-  .tab.on { background: #18181B; color: #FAFAFA; border: 1px solid #27272A; }
-  .list-hdr { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; border-bottom: 1px solid #27272A; background: #18181B; }
-  .list-hdr h2 { font-size: 14px; font-weight: 500; color: #FAFAFA; }
-  .cnt { font-size: 11px; font-weight: 500; background: #27272A; color: #A1A1AA; padding: 3px 10px; border-radius: 20px; }
-  .row { display: flex; align-items: center; gap: 16px; padding: 16px 22px; border-bottom: 1px solid #27272A; transition: background 0.2s; }
+  
+  .btn-primary { width: 100%; padding: 14px 20px; background: #FAFAFA; color: #09090B; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; -webkit-appearance: none; }
+  .btn-primary:active { opacity: 0.8; }
+  .btn-primary:disabled { opacity: .5; }
+  
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid #27272A; padding-bottom: 12px; }
+  .tab { flex: 1; padding: 10px; font-size: 14px; font-weight: 600; color: #A1A1AA; background: transparent; border: none; cursor: pointer; border-radius: 8px; }
+  .tab.on { background: #18181B; color: #FAFAFA; }
+  
+  .list-hdr { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #27272A; background: #18181B; }
+  .list-hdr h2 { font-size: 15px; font-weight: 600; color: #FAFAFA; }
+  .cnt { font-size: 12px; font-weight: 600; background: #27272A; color: #A1A1AA; padding: 4px 10px; border-radius: 20px; }
+  
+  .row { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-bottom: 1px solid #27272A; }
   .row:last-child { border-bottom: none; }
-  .row:hover { background: #18181B; }
-  .ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; font-weight: 600; }
+  .row-top { display: flex; align-items: center; gap: 16px; }
+  
+  .ico { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; font-weight: 600; }
   .ico.up { background: rgba(52, 211, 153, 0.1); color: #34D399; }
   .ico.dn { background: rgba(248, 113, 113, 0.1); color: #F87171; }
   .ico.pend { background: #18181B; color: #A1A1AA; border: 1px solid #27272A; }
+  
   .rinfo { flex: 1; min-width: 0; }
-  .rname { font-weight: 500; font-size: 14px; color: #FAFAFA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-  .rmeta { font-size: 12px; color: #A1A1AA; }
-  .acts { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; }
+  .rname { font-weight: 600; font-size: 15px; color: #FAFAFA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+  .rmeta { font-size: 13px; color: #A1A1AA; }
+  
+  .acts { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: space-between; margin-top: 4px; }
+  .acts-right { display: flex; gap: 8px; align-items: center; }
+  
+  .badge { display: inline-flex; align-items: center; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 20px; }
   .badge.pos { background: rgba(52, 211, 153, 0.1); color: #34D399; }
   .badge.neg { background: rgba(248, 113, 113, 0.1); color: #F87171; }
-  .btn-sell { padding: 7px 14px; background: #27272A; color: #FAFAFA; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-  .btn-sell:hover { background: #3F3F46; }
-  .btn-confirm { padding: 7px 14px; background: #FAFAFA; color: #09090B; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
-  .btn-ghost { padding: 7px 10px; background: transparent; color: #A1A1AA; border: 1px solid #27272A; border-radius: 6px; font-size: 13px; cursor: pointer; }
-  .btn-del { padding: 6px 8px; background: transparent; color: #52525B; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1; transition: all 0.2s; }
-  .btn-del:hover { color: #F87171; background: rgba(248, 113, 113, 0.1); }
-  .sinput { width: 100px; padding: 7px 10px; border: 1px solid #27272A; border-radius: 6px; font-size: 13px; background: #09090B; color: #FAFAFA; }
-  .sinput:focus { outline: none; border-color: #FAFAFA; }
+  
+  .btn-sell { padding: 10px 16px; background: #27272A; color: #FAFAFA; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; flex: 1; text-align: center; }
+  .btn-del { padding: 10px; background: transparent; color: #52525B; border: none; font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+  
+  .sell-form { display: flex; gap: 8px; width: 100%; }
+  .sinput { flex: 1; padding: 10px 16px; border: 1px solid #27272A; border-radius: 8px; font-size: 16px; background: #18181B; color: #FAFAFA; -webkit-appearance: none; }
+  .btn-confirm { padding: 10px 16px; background: #FAFAFA; color: #09090B; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  .btn-ghost { padding: 10px 16px; background: transparent; color: #A1A1AA; border: 1px solid #27272A; border-radius: 8px; font-size: 14px; }
+  
   .empty { padding: 60px 20px; text-align: center; color: #A1A1AA; }
-  .empty .eico { font-size: 28px; margin-bottom: 12px; opacity: 0.5; }
-  .empty p { font-size: 13px; }
-  .chart-empty { padding: 50px 20px; text-align: center; color: #A1A1AA; font-size: 13px; }
-  @media (max-width: 640px) {
-    .metrics { grid-template-columns: 1fr 1fr; }
-    .form-row { flex-direction: column; }
-    .row { flex-wrap: wrap; }
+  .empty .eico { font-size: 32px; margin-bottom: 16px; opacity: 0.5; }
+  .chart-empty { padding: 50px 20px; text-align: center; color: #A1A1AA; font-size: 14px; }
+
+  @media (min-width: 640px) {
+    .metrics { grid-template-columns: repeat(4, 1fr); }
+    .form-row { flex-direction: row; align-items: flex-end; }
+    .btn-primary { width: auto; margin-top: 0; }
+    .row { flex-direction: row; align-items: center; justify-content: space-between; }
+    .acts { width: auto; margin-top: 0; justify-content: flex-end; }
+    .btn-sell { flex: none; }
   }
 `;
 
-// Parse "M/D/YYYY" → Date
 function parseDate(str) {
   if (!str) return null;
   const [m, d, y] = str.split('/').map(Number);
@@ -110,13 +141,12 @@ function bucketLabel(key, horizon) {
 }
 
 export default function App() {
-  // Load data from LocalStorage on initial render
   const [inventory, setInventory] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('resell_tracker_data');
       if (saved) return JSON.parse(saved);
     }
-    return []; // Start empty if no saved data
+    return []; 
   });
 
   const [tab, setTab] = useState('active');
@@ -126,7 +156,6 @@ export default function App() {
   const [sellingId, setSellingId] = useState(null);
   const [sellPrice, setSellPrice] = useState('');
 
-  // Save data to LocalStorage whenever inventory changes
   useEffect(() => {
     localStorage.setItem('resell_tracker_data', JSON.stringify(inventory));
   }, [inventory]);
@@ -207,19 +236,19 @@ export default function App() {
 
         <div className="metrics">
           <div className="metric">
-            <div className="mlabel">Total Spent</div>
+            <div className="mlabel">Spent</div>
             <div className="mval">{fmt(allCost)}</div>
           </div>
           <div className="metric">
-            <div className="mlabel">Gross Revenue</div>
+            <div className="mlabel">Revenue</div>
             <div className="mval">{fmt(grossRev)}</div>
           </div>
           <div className="metric">
-            <div className="mlabel">Net Income</div>
+            <div className="mlabel">Profit</div>
             <div className={`mval ${net >= 0 ? 'pos' : 'neg'}`}>{net >= 0 ? '' : '-'}{fmt(net)}</div>
           </div>
           <div className="metric">
-            <div className="mlabel">ROI on Spent</div>
+            <div className="mlabel">ROI</div>
             <div className={`mval ${parseFloat(roi) >= 0 ? 'pos' : 'neg'}`}>{roi}%</div>
           </div>
         </div>
@@ -227,51 +256,25 @@ export default function App() {
         <div className="card">
           <div className="card-pad">
             <div className="chart-header">
-              <div className="slabel">Cumulative profit</div>
+              <div className="slabel">Profit</div>
               <div className="time-tabs">
                 {['W', 'M', 'Y'].map(h => (
                   <button key={h} className={`time-tab ${horizon === h ? 'on' : ''}`} onClick={() => setHorizon(h)}>
-                    {h === 'W' ? 'Weekly' : h === 'M' ? 'Monthly' : 'Yearly'}
+                    {h}
                   </button>
                 ))}
               </div>
             </div>
             {chartData.length < 1 ? (
-              <div className="chart-empty">No sold items yet — mark something sold to see your profit curve.</div>
+              <div className="chart-empty">No sold items yet to chart.</div>
             ) : (
-              <div style={{ height: 220 }}>
+              <div style={{ height: 180, marginLeft: -16 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ top: 12, right: 16, left: 0, bottom: 0 }}>
-                    <XAxis
-                      dataKey="label"
-                      tick={{ fontSize: 11, fill: '#A1A1AA' }}
-                      axisLine={{ stroke: '#27272A' }}
-                      tickLine={false}
-                      dy={10}
-                    />
-                    <YAxis
-                      domain={yDomain}
-                      tickFormatter={v => `$${v}`}
-                      tick={{ fontSize: 11, fill: '#A1A1AA' }}
-                      axisLine={false}
-                      tickLine={false}
-                      width={56}
-                    />
-                    <Tooltip
-                      formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'cumProfit' ? 'Cumulative profit' : 'Period profit']}
-                      labelFormatter={l => `Period: ${l}`}
-                      contentStyle={{ border: '1px solid #27272A', borderRadius: 8, fontSize: 12, background: '#18181B', color: '#FAFAFA' }}
-                      itemStyle={{ color: '#FAFAFA' }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="cumProfit"
-                      name="cumProfit"
-                      stroke="#FAFAFA"
-                      strokeWidth={2}
-                      dot={{ r: 4, fill: '#FAFAFA', stroke: '#09090B', strokeWidth: 2 }}
-                      activeDot={{ r: 5 }}
-                    />
+                  <LineChart data={chartData} margin={{ top: 8, right: 10, left: 0, bottom: 0 }}>
+                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#A1A1AA' }} axisLine={{ stroke: '#27272A' }} tickLine={false} dy={10} />
+                    <YAxis domain={yDomain} tickFormatter={v => `$${v}`} tick={{ fontSize: 11, fill: '#A1A1AA' }} axisLine={false} tickLine={false} width={48} />
+                    <Tooltip formatter={(v, name) => [`$${v.toFixed(2)}`, name === 'cumProfit' ? 'Cumulative' : 'Period']} labelFormatter={l => `Period: ${l}`} contentStyle={{ border: '1px solid #27272A', borderRadius: 8, fontSize: 12, background: '#18181B', color: '#FAFAFA' }} itemStyle={{ color: '#FAFAFA' }} />
+                    <Line type="monotone" dataKey="cumProfit" name="cumProfit" stroke="#FAFAFA" strokeWidth={2} dot={{ r: 4, fill: '#FAFAFA', stroke: '#09090B', strokeWidth: 2 }} activeDot={{ r: 5 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -280,26 +283,16 @@ export default function App() {
         </div>
 
         <div className="card card-pad">
-          <div className="slabel" style={{ marginBottom: 12 }}>Add new item</div>
+          <div className="slabel" style={{ marginBottom: 16 }}>Add new item</div>
           <div className="form-row">
             <div className="ff" style={{ flex: 2 }}>
-              <label>Item name</label>
-              <input
-                type="text" placeholder="e.g. Jordan 1 Bred"
-                value={name} onChange={e => setName(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addItem()}
-              />
+              <input type="text" placeholder="Item name (e.g. Jordan 1 Bred)" value={name} onChange={e => setName(e.target.value)} onKeyDown={e => e.key === 'Enter' && addItem()} />
             </div>
             <div className="ff">
-              <label>Purchase price</label>
-              <input
-                type="number" placeholder="0.00" min="0"
-                value={cost} onChange={e => setCost(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addItem()}
-              />
+              <input type="number" placeholder="Cost ($0.00)" min="0" value={cost} onChange={e => setCost(e.target.value)} onKeyDown={e => e.key === 'Enter' && addItem()} />
             </div>
             <button className="btn-primary" onClick={addItem} disabled={!name.trim() || !cost}>
-              + Add item
+              Add Item
             </button>
           </div>
         </div>
@@ -315,8 +308,8 @@ export default function App() {
 
         <div className="card" style={{ marginBottom: 0 }}>
           <div className="list-hdr">
-            <h2>{tab === 'active' ? 'Active inventory' : 'Sold items'}</h2>
-            <span className="cnt">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+            <h2>{tab === 'active' ? 'Inventory' : 'History'}</h2>
+            <span className="cnt">{items.length}</span>
           </div>
           {items.length === 0 ? (
             <div className="empty">
@@ -331,37 +324,38 @@ export default function App() {
             const arrow = item.isSold ? (isPos ? '↗' : '↘') : '◷';
             return (
               <div key={item.id} className="row">
-                <div className={`ico ${icoClass}`}>{arrow}</div>
-                <div className="rinfo">
-                  <div className="rname">{item.name}</div>
-                  <div className="rmeta">
-                    {item.isSold
-                      ? `Cost ${fmt(item.cost)} · Sold ${fmt(item.soldPrice)} · ${item.dateSold}`
-                      : `Cost ${fmt(item.cost)} · Added ${item.dateAdded}`}
+                <div className="row-top">
+                  <div className={`ico ${icoClass}`}>{arrow}</div>
+                  <div className="rinfo">
+                    <div className="rname">{item.name}</div>
+                    <div className="rmeta">
+                      {item.isSold
+                        ? `Cost ${fmt(item.cost)} · Sold ${fmt(item.soldPrice)}`
+                        : `Cost ${fmt(item.cost)} · Added ${item.dateAdded}`}
+                    </div>
                   </div>
                 </div>
+                
                 <div className="acts">
                   {item.isSold ? (
-                    <span className={`badge ${profit >= 0 ? 'pos' : 'neg'}`}>
-                      {profit >= 0 ? '+' : '-'}{fmt(profit)} ({pct}%)
-                    </span>
-                  ) : sellingId === item.id ? (
                     <>
-                      <input
-                        className="sinput" type="number" placeholder="Sold for $" min="0"
-                        value={sellPrice} onChange={e => setSellPrice(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && confirmSell(item.id)}
-                        autoFocus
-                      />
-                      <button className="btn-confirm" onClick={() => confirmSell(item.id)}>Confirm</button>
-                      <button className="btn-ghost" onClick={() => { setSellingId(null); setSellPrice(''); }}>✕</button>
+                      <span className={`badge ${profit >= 0 ? 'pos' : 'neg'}`}>
+                        {profit >= 0 ? '+' : '-'}{fmt(profit)} ({pct}%)
+                      </span>
+                      <button className="btn-del" onClick={() => deleteItem(item.id)}>×</button>
                     </>
+                  ) : sellingId === item.id ? (
+                    <div className="sell-form">
+                      <input className="sinput" type="number" placeholder="Sold $" min="0" value={sellPrice} onChange={e => setSellPrice(e.target.value)} onKeyDown={e => e.key === 'Enter' && confirmSell(item.id)} autoFocus />
+                      <button className="btn-confirm" onClick={() => confirmSell(item.id)}>✓</button>
+                      <button className="btn-ghost" onClick={() => { setSellingId(null); setSellPrice(''); }}>✕</button>
+                    </div>
                   ) : (
-                    <button className="btn-sell" onClick={() => { setSellingId(item.id); setSellPrice(''); }}>
-                      Mark sold
-                    </button>
+                    <>
+                      <button className="btn-sell" onClick={() => { setSellingId(item.id); setSellPrice(''); }}>Mark Sold</button>
+                      <button className="btn-del" onClick={() => deleteItem(item.id)}>×</button>
+                    </>
                   )}
-                  <button className="btn-del" onClick={() => deleteItem(item.id)} title="Delete">×</button>
                 </div>
               </div>
             );
